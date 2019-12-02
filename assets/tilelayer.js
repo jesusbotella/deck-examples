@@ -5,9 +5,10 @@
 }(this, function () { 'use strict';
 
     var MapsApi = /** @class */ (function () {
-        function MapsApi(apiKey, username) {
+        function MapsApi(apiKey, username, serverURL) {
             this._apiKey = apiKey;
             this._username = username;
+            this._serverURL = serverURL;
         }
         Object.defineProperty(MapsApi.prototype, "apiKey", {
             get: function () {
@@ -49,9 +50,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(mapParameters)
             };
-            return fetch("https://" + this._username + ".carto.com/api/v1/map?api_key=" + this._apiKey, requestOptions)
+            var serverURL = this._serverURL || ('https://' + this._username + '.carto.com');
+            return fetch(serverURL + "/api/v1/map?api_key=" + this._apiKey, requestOptions)
                 .then(function (response) { return response.json(); })
-                .then(function (data) { return "https://" + _this._username + ".carto.com/api/v1/map/" + data.layergroupid + "/{z}/{x}/{y}.mvt?api_key=" + _this._apiKey; });
+                .then(function (data) { return serverURL + "/api/v1/map/" + data.layergroupid + "/{z}/{x}/{y}.mvt?api_key=" + _this._apiKey; });
         };
         return MapsApi;
     }());
@@ -61,7 +63,7 @@
         const { mapOptions, deckInstance } = options;
 
         this.deck = window.deck || deckInstance;
-        this.mapsApi = new MapsApi(mapOptions.apiKey, mapOptions.username);
+        this.mapsApi = new MapsApi(mapOptions.apiKey, mapOptions.username, mapOptions.serverURL);
 
         this.map = this.mapsApi.instantiateMap(mapOptions);
       }
@@ -80,11 +82,11 @@
           pointRadiusMinPixels: 5,
           urlTemplate,
           uniquePropertyName: 'cartodb_id',
-          renderSubLayers: (props) => {
-            return new deckLayer({
-              ...props
-            });
-          }
+          // renderSubLayers: (props) => {
+          //   return new deckLayer({
+          //     ...props
+          //   });
+          // }
         });
       }
     }

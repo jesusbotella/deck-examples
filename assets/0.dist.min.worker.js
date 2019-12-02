@@ -86,53 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "../../node_modules/@babel/runtime/helpers/asyncToGenerator.js":
-/*!*********************************************************************************************************!*\
-  !*** /Users/jbotella/Development/carto/deck.gl/node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
-  \*********************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-        args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-
-      _next(undefined);
-    });
-  };
-}
-
-module.exports = _asyncToGenerator;
-
-/***/ }),
-
 /***/ "../../node_modules/@babel/runtime/helpers/classCallCheck.js":
 /*!*******************************************************************************************************!*\
   !*** /Users/jbotella/Development/carto/deck.gl/node_modules/@babel/runtime/helpers/classCallCheck.js ***!
@@ -1017,6 +970,11 @@ Pbf.Fixed32 = 5; // 32-bit: float, fixed32, sfixed32
 var SHIFT_LEFT_32 = (1 << 16) * (1 << 16),
     SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32;
 
+// Threshold chosen based on both benchmarking and knowledge about browser string
+// data structures (which currently switch structure types at 12 bytes or more)
+var TEXT_DECODER_MIN_LENGTH = 12;
+var utf8TextDecoder = typeof TextDecoder === 'undefined' ? null : new TextDecoder('utf8');
+
 Pbf.prototype = {
 
     destroy: function() {
@@ -1110,10 +1068,16 @@ Pbf.prototype = {
     },
 
     readString: function() {
-        var end = this.readVarint() + this.pos,
-            str = readUtf8(this.buf, this.pos, end);
+        var end = this.readVarint() + this.pos;
+        var pos = this.pos;
         this.pos = end;
-        return str;
+
+        if (end - pos >= TEXT_DECODER_MIN_LENGTH && utf8TextDecoder) {
+            // longer strings are fast with the built-in browser TextDecoder API
+            return readUtf8TextDecoder(this.buf, pos, end);
+        }
+        // short strings are fast with our custom implementation
+        return readUtf8(this.buf, pos, end);
     },
 
     readBytes: function() {
@@ -1569,6 +1533,10 @@ function readUtf8(buf, pos, end) {
     }
 
     return str;
+}
+
+function readUtf8TextDecoder(buf, pos, end) {
+    return utf8TextDecoder.decode(buf.subarray(pos, end));
 }
 
 function writeUtf8(buf, str, pos) {
@@ -2376,17 +2344,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MVTWorker", function() { return MVTWorker; });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "../../node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "../../node_modules/@babel/runtime/helpers/asyncToGenerator.js");
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "../../node_modules/@babel/runtime/helpers/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "../../node_modules/@babel/runtime/helpers/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mapbox/vector-tile */ "../../node_modules/@mapbox/vector-tile/index.js");
-/* harmony import */ var _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var pbf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! pbf */ "../../node_modules/pbf/index.js");
-/* harmony import */ var pbf__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(pbf__WEBPACK_IMPORTED_MODULE_5__);
-
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "../../node_modules/@babel/runtime/helpers/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "../../node_modules/@babel/runtime/helpers/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mapbox/vector-tile */ "../../node_modules/@mapbox/vector-tile/index.js");
+/* harmony import */ var _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var pbf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! pbf */ "../../node_modules/pbf/index.js");
+/* harmony import */ var pbf__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(pbf__WEBPACK_IMPORTED_MODULE_4__);
 
 
 
@@ -2396,10 +2361,10 @@ var MVTWorker =
 /*#__PURE__*/
 function () {
   function MVTWorker() {
-    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2___default()(this, MVTWorker);
+    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1___default()(this, MVTWorker);
   }
 
-  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3___default()(MVTWorker, [{
+  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2___default()(MVTWorker, [{
     key: "onMessage",
     value: function onMessage(event) {
       this.processEvent(event).then(function (message) {
@@ -2435,58 +2400,48 @@ function () {
     }
   }, {
     key: "convertMVTToGeoJSON",
-    value: function () {
-      var _convertMVTToGeoJSON = _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1___default()(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response, tileProperties) {
-        var arrayBuffer, tile, features, layerName, vectorTileLayer, i, vectorTileFeature, feature;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.next = 2;
-                return response.arrayBuffer();
+    value: function convertMVTToGeoJSON(response, tileProperties) {
+      var arrayBuffer, tile, features, layerName, vectorTileLayer, i, vectorTileFeature, feature;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.async(function convertMVTToGeoJSON$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(response.arrayBuffer());
 
-              case 2:
-                arrayBuffer = _context.sent;
+            case 2:
+              arrayBuffer = _context.sent;
 
-                if (!(!response || arrayBuffer.byteLength === 0)) {
-                  _context.next = 5;
-                  break;
+              if (!(!response || arrayBuffer.byteLength === 0)) {
+                _context.next = 5;
+                break;
+              }
+
+              return _context.abrupt("return", []);
+
+            case 5:
+              tile = new _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_3__["VectorTile"](new pbf__WEBPACK_IMPORTED_MODULE_4___default.a(arrayBuffer));
+              features = [];
+
+              for (layerName in tile.layers) {
+                vectorTileLayer = tile.layers[layerName];
+
+                for (i = 0; i < vectorTileLayer.length; i++) {
+                  vectorTileFeature = vectorTileLayer.feature(i);
+                  feature = vectorTileFeature.toGeoJSON(tileProperties.x, tileProperties.y, tileProperties.z);
+                  features.push(feature);
                 }
+              }
 
-                return _context.abrupt("return", []);
+              return _context.abrupt("return", features);
 
-              case 5:
-                tile = new _mapbox_vector_tile__WEBPACK_IMPORTED_MODULE_4__["VectorTile"](new pbf__WEBPACK_IMPORTED_MODULE_5___default.a(arrayBuffer));
-                features = [];
-
-                for (layerName in tile.layers) {
-                  vectorTileLayer = tile.layers[layerName];
-
-                  for (i = 0; i < vectorTileLayer.length; i++) {
-                    vectorTileFeature = vectorTileLayer.feature(i);
-                    feature = vectorTileFeature.toGeoJSON(tileProperties.x, tileProperties.y, tileProperties.z);
-                    features.push(feature);
-                  }
-                }
-
-                return _context.abrupt("return", features);
-
-              case 9:
-              case "end":
-                return _context.stop();
-            }
+            case 9:
+            case "end":
+              return _context.stop();
           }
-        }, _callee);
-      }));
-
-      function convertMVTToGeoJSON(_x, _x2) {
-        return _convertMVTToGeoJSON.apply(this, arguments);
-      }
-
-      return convertMVTToGeoJSON;
-    }()
+        }
+      });
+    }
   }]);
 
   return MVTWorker;
