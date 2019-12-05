@@ -71,13 +71,15 @@
       }
 
       async createTileLayer(props = {}) {
-        const { layerType, ...styleProps } = props;
+        const layerType = props.layerType;
+        const styleProps = Object.assign({}, props, { layerType: undefined });
+
         const deckLayer = layerType || this.deck.GeoJsonLayer;
 
         const urlTemplates = await this.map;
 
-        return new deck.MVTTileLayer({
-          ...styleProps,
+        return new deck.MVTTileLayer(
+          Object.assign({}, styleProps, {
           getLineColor: [192, 0, 0],
           getFillColor: [200, 120, 80],
           lineWidthMinPixels: 1,
@@ -89,7 +91,8 @@
           //     ...props
           //   });
           // }
-        });
+          })
+        );
       }
     }
 
