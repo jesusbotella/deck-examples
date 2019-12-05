@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Add layer | CARTO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <script src="https://libs.cartocdn.com/carto-vl/v1.4.2/carto-vl.min.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet" />
+  <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="map"></div>
+  <div id="loader">
+    <div class="CDB-LoaderIcon CDB-LoaderIcon--big">
+      <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
+        <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"></circle>
+      </svg>
+    </div>
+  </div>
+  <script>
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: carto.basemaps.voyager,
+      center: [-82.80440792315545, 42.72164454170991],
+      zoom: 6,
+    });
+
+    // Define user
+    carto.setDefaultAuth({
+      username: 'semcog',
+      apiKey: 'default_public'
+    });
+
+    // Define layer
+    const source = new carto.source.SQL(`
+    SELECT
+              c.cartodb_id AS cartodb_id,
+              c.the_geom_webmercator AS the_geom_webmercator,
+              d.name as name,
+              d.county as county,
+              d.county2 as county2,
+              d.totalpop_17 as totalpop_17, d.constant as constant, d.acres as acres, d.emedianage_17 as emedianage_17, d.epop65plus_17 as epop65plus_17, d.epop65plusalone_17 as epop65plusalone_17, d.epop5to17_17 as epop5to17_17, d.epopbachorhigh17 as epopbachorhigh17, d.epop25plus17 as epop25plus17, d.epopinpoverty_17 as epopinpoverty_17, d.easiannonhisp_17 as easiannonhisp_17, d.eblacknonhisp_17 as eblacknonhisp_17, d.ehisp_17 as ehisp_17, d.ewhitenonhisp_17 as ewhitenonhisp_17, d.etotalhh_17 as etotalhh_17, d.eavghouseholdsize_17 as eavghouseholdsize_17, d.e_hhwithseniors_17 as e_hhwithseniors_17, d.e_hhwithchildren_17 as e_hhwithchildren_17, d.ehh_nocar_17 as ehh_nocar_17, d.ehousingunits_17 as ehousingunits_17, d.evacantunits_17 as evacantunits_17, d.eownerrate_17 as eownerrate_17, d.erenterrate_17 as erenterrate_17, d.esinglefamily_17 as esinglefamily_17, d.emultiunit_17 as emultiunit_17, d.jobs2015 as jobs2015, d.eunemploymentrate_17 as eunemploymentrate_17, d.emedhhinc_17 as emedhhinc_17, d.epercapitaincome_17 as epercapitaincome_17, d.emedianhousingvalue_17 as emedianhousingvalue_17, d.edaytimepop_16 as edaytimepop_16, d.etotalpop_16 as etotalpop_16, d.eavgcommutetime_17 as eavgcommutetime_17, d.edrovealone_17 as edrovealone_17, d.epop16plus_17 as epop16plus_17, d.emasstransit_17 as emasstransit_17, d.ehhlessthan_10000_17 as ehhlessthan_10000_17, d.ehh_10000to_14999_17 as ehh_10000to_14999_17, d.ehh_15000to_19999_17 as ehh_15000to_19999_17, d.ehh_20000to_24999_17 as ehh_20000to_24999_17, d.ehh_25000to_29999_17 as ehh_25000to_29999_17, d.ehh_30000to_34999_17 as ehh_30000to_34999_17, d.ehh_35000to_39999_17 as ehh_35000to_39999_17, d.ehh_40000to_44999_17 as ehh_40000to_44999_17, d.ehh_45000to_49999_17 as ehh_45000to_49999_17, d.ehh_50000to_59999_17 as ehh_50000to_59999_17, d.ehh_60000to_74999_17 as ehh_60000to_74999_17, d.ehh_75000to_99999_17 as ehh_75000to_99999_17, d.ehh_100000to_124999_17 as ehh_100000to_124999_17, d.ehh_125000to_149999_17 as ehh_125000to_149999_17, d.ehh_150000to_199999_17 as ehh_150000to_199999_17, d.ehh_200000ormore_17 as ehh_200000ormore_17, d.popmale0_5_17 as popmale0_5_17, d.popmale5_9_17 as popmale5_9_17, d.popmale10_14_17 as popmale10_14_17, d.popmale15_19_17 as popmale15_19_17, d.popmale20_24_17 as popmale20_24_17, d.popmale25_29_17 as popmale25_29_17, d.popmale30_34_17 as popmale30_34_17, d.popmale35_39_17 as popmale35_39_17, d.popmale40_44_17 as popmale40_44_17, d.popmale45_49_17 as popmale45_49_17, d.popmale50_54_17 as popmale50_54_17, d.popmale55_59_17 as popmale55_59_17, d.popmale60_64_17 as popmale60_64_17, d.popmale65_69_17 as popmale65_69_17, d.popmale70_74_17 as popmale70_74_17, d.popmale75_79_17 as popmale75_79_17, d.popmale80_84_17 as popmale80_84_17, d.popmale85andup_17 as popmale85andup_17, d.popfemale0_5_17 as popfemale0_5_17, d.popfemale5_9_17 as popfemale5_9_17, d.popfemale10_14_17 as popfemale10_14_17, d.popfemale15_19_17 as popfemale15_19_17, d.popfemale20_24_17 as popfemale20_24_17, d.popfemale25_29_17 as popfemale25_29_17, d.popfemale30_34_17 as popfemale30_34_17, d.popfemale35_39_17 as popfemale35_39_17, d.popfemale40_44_17 as popfemale40_44_17, d.popfemale45_49_17 as popfemale45_49_17, d.popfemale50_54_17 as popfemale50_54_17, d.popfemale55_59_17 as popfemale55_59_17, d.popfemale60_64_17 as popfemale60_64_17, d.popfemale65_69_17 as popfemale65_69_17, d.popfemale70_74_17 as popfemale70_74_17, d.popfemale75_79_17 as popfemale75_79_17, d.popfemale80_84_17 as popfemale80_84_17, d.popfemale85andup_17 as popfemale85andup_17, d.mtotalpop_17 as mtotalpop_17, d.mmedianage_17 as mmedianage_17, d.mpop65plus_17 as mpop65plus_17, d.mpop65plusalone_17 as mpop65plusalone_17, d.mpop5to17_17 as mpop5to17_17, d.mpopbachorhigh17 as mpopbachorhigh17, d.mpop25plus17 as mpop25plus17, d.mpopinpoverty_17 as mpopinpoverty_17, d.masiannonhisp_17 as masiannonhisp_17, d.mblacknonhisp_17 as mblacknonhisp_17, d.mhisp_17 as mhisp_17, d.mwhitenonhisp_17 as mwhitenonhisp_17, d.mtotalhh_17 as mtotalhh_17, d.mavghouseholdsize_17 as mavghouseholdsize_17, d.m_hhwithseniors_17 as m_hhwithseniors_17, d.m_hhwithchildren_17 as m_hhwithchildren_17, d.mhh_nocar_17 as mhh_nocar_17, d.mhousingunits_17 as mhousingunits_17, d.mvacantunits_17 as mvacantunits_17, d.mownerrate_17 as mownerrate_17, d.mrenterrate_17 as mrenterrate_17, d.msinglefamily_17 as msinglefamily_17, d.mmultiunit_17 as mmultiunit_17, d.munemploymentrate_17 as munemploymentrate_17, d.mmedhhinc_17 as mmedhhinc_17, d.mpercapitaincome_17 as mpercapitaincome_17, d.mmedianhousingvalue_17 as mmedianhousingvalue_17, d.mdaytimepop_16 as mdaytimepop_16, d.mtotalpop_16 as mtotalpop_16, d.mavgcommutetime_17 as mavgcommutetime_17, d.mdrovealone_17 as mdrovealone_17, d.mpop16plus_17 as mpop16plus_17, d.mmasstransit_17 as mmasstransit_17, d.mhhlessthan_10000_17 as mhhlessthan_10000_17, d.mhh_10000to_14999_17 as mhh_10000to_14999_17, d.mhh_15000to_19999_17 as mhh_15000to_19999_17, d.mhh_20000to_24999_17 as mhh_20000to_24999_17, d.mhh_25000to_29999_17 as mhh_25000to_29999_17, d.mhh_30000to_34999_17 as mhh_30000to_34999_17, d.mhh_35000to_39999_17 as mhh_35000to_39999_17, d.mhh_40000to_44999_17 as mhh_40000to_44999_17, d.mhh_45000to_49999_17 as mhh_45000to_49999_17, d.mhh_50000to_59999_17 as mhh_50000to_59999_17, d.mhh_60000to_74999_17 as mhh_60000to_74999_17, d.mhh_75000to_99999_17 as mhh_75000to_99999_17, d.mhh_100000to_124999_17 as mhh_100000to_124999_17, d.mhh_125000to_149999_17 as mhh_125000to_149999_17, d.mhh_150000to_199999_17 as mhh_150000to_199999_17, d.mhh_200000ormore_17 as mhh_200000ormore_17, d.mpopmale0_5_17 as mpopmale0_5_17, d.mpopmale5_9_17 as mpopmale5_9_17, d.mpopmale10_14_17 as mpopmale10_14_17, d.mpopmale15_19_17 as mpopmale15_19_17, d.mpopmale20_24_17 as mpopmale20_24_17, d.mpopmale25_29_17 as mpopmale25_29_17, d.mpopmale30_34_17 as mpopmale30_34_17, d.mpopmale35_39_17 as mpopmale35_39_17, d.mpopmale40_44_17 as mpopmale40_44_17, d.mpopmale45_49_17 as mpopmale45_49_17, d.mpopmale50_54_17 as mpopmale50_54_17, d.mpopmale55_59_17 as mpopmale55_59_17, d.mpopmale60_64_17 as mpopmale60_64_17, d.mpopmale65_69_17 as mpopmale65_69_17, d.mpopmale70_74_17 as mpopmale70_74_17, d.mpopmale75_79_17 as mpopmale75_79_17, d.mpopmale80_84_17 as mpopmale80_84_17, d.mpopmale85andup_17 as mpopmale85andup_17, d.mpopfemale0_5_17 as mpopfemale0_5_17, d.mpopfemale5_9_17 as mpopfemale5_9_17, d.mpopfemale10_14_17 as mpopfemale10_14_17, d.mpopfemale15_19_17 as mpopfemale15_19_17, d.mpopfemale20_24_17 as mpopfemale20_24_17, d.mpopfemale25_29_17 as mpopfemale25_29_17, d.mpopfemale30_34_17 as mpopfemale30_34_17, d.mpopfemale35_39_17 as mpopfemale35_39_17, d.mpopfemale40_44_17 as mpopfemale40_44_17, d.mpopfemale45_49_17 as mpopfemale45_49_17, d.mpopfemale50_54_17 as mpopfemale50_54_17, d.mpopfemale55_59_17 as mpopfemale55_59_17, d.mpopfemale60_64_17 as mpopfemale60_64_17, d.mpopfemale65_69_17 as mpopfemale65_69_17, d.mpopfemale70_74_17 as mpopfemale70_74_17, d.mpopfemale75_79_17 as mpopfemale75_79_17, d.mpopfemale80_84_17 as mpopfemale80_84_17, d.mpopfemale85andup_17 as mpopfemale85andup_17,
+              CAST(d.geoid10 as varchar(12)) AS geoid
+            FROM
+              communities_combined AS c
+              INNER JOIN community_explorer_data AS d
+              ON (CAST(c.semmcd as bigint) = d.geoid10 AND d.geotype = 'mcd')`);
+    const viz = new carto.Viz();
+    const layer = new carto.Layer('layer', source, viz);
+
+    layer.addTo(map, 'watername_ocean');
+    layer.on('loaded', hideLoader);
+
+    function hideLoader() {
+      document.getElementById('loader').style.opacity = '0';
+    }
+  </script>
+</body>
+
+</html>
+

@@ -31,7 +31,6 @@
             configurable: true
         });
         MapsApi.prototype.instantiateMap = function (options) {
-            var _this = this;
             var sql = options.sql, dataset = options.dataset;
             if (sql === undefined && dataset === undefined) {
                 throw new Error('Please provide a dataset or a SQL query');
@@ -53,7 +52,10 @@
             var serverURL = this._serverURL || ('https://' + this._username + '.carto.com');
             return fetch(serverURL + "/api/v1/map?api_key=" + this._apiKey, requestOptions)
                 .then(function (response) { return response.json(); })
-                .then(function (data) { return serverURL + "/api/v1/map/" + data.layergroupid + "/{z}/{x}/{y}.mvt?api_key=" + _this._apiKey; });
+                .then(function (data) {
+                var urlData = data.metadata.url.vector;
+                return urlData.subdomains.map(function (subdomain) { return urlData.urlTemplate.replace('{s}', subdomain); });
+            });
         };
         return MapsApi;
     }());
@@ -72,7 +74,7 @@
         const { layerType, ...styleProps } = props;
         const deckLayer = layerType || this.deck.GeoJsonLayer;
 
-        const urlTemplate = await this.map;
+        const urlTemplates = await this.map;
 
         return new deck.MVTTileLayer({
           ...styleProps,
@@ -80,7 +82,7 @@
           getFillColor: [200, 120, 80],
           lineWidthMinPixels: 1,
           pointRadiusMinPixels: 5,
-          urlTemplate,
+          urlTemplates,
           uniquePropertyName: 'cartodb_id',
           // renderSubLayers: (props) => {
           //   return new deckLayer({
