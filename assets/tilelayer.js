@@ -38,9 +38,9 @@
             var mapParameters = {
                 layers: [{
                         type: 'cartodb',
-                        options: {
+                        options: Object.assign({}, options, {
                             sql: sql || "select * from " + dataset
-                        }
+                        })
                     }],
                 version: '1.3.1'
             };
@@ -67,7 +67,12 @@
         this.deck = window.deck || deckInstance;
         this.mapsApi = new MapsApi(mapOptions.apiKey, mapOptions.username, mapOptions.serverURL);
 
-        this.map = this.mapsApi.instantiateMap(mapOptions);
+        const mapInstantiationOptions = Object.assign({}, mapOptions, {
+          vector_extent: 2048,
+          vector_simplify_extent: 2048
+        });
+
+        this.map = this.mapsApi.instantiateMap(mapInstantiationOptions);
       }
 
       async createTileLayer(props = {}) {
