@@ -36,6 +36,7 @@
                 throw new Error('Please provide a dataset or a SQL query');
             }
             var mapParameters = {
+                buffersize: { mvt: 1 },
                 layers: [{
                         type: 'cartodb',
                         options: Object.assign({}, options, {
