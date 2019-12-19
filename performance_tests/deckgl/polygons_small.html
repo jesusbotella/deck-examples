@@ -63,9 +63,12 @@
           container: 'map',
           mapboxApiAccessToken: '',
           mapStyle: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-          longitude: -82.80440792315545,
-          latitude: 42.72164454170991,
-          zoom: 6,
+          initialViewState: {
+            longitude: -82.80440792315545,
+            latitude: 42.72164454170991,
+            zoom: 6
+          },
+          controller: true,
           layers: [
             tiledLayer
           ]
