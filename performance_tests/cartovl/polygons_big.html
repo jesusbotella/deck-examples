@@ -36,7 +36,10 @@
 
     // Define layer
     const source = new carto.source.Dataset('gadm36_esp_4');
-    const viz = new carto.Viz();
+    const viz = new carto.Viz(`
+      color: #000;
+      strokeWidth: 0;
+    `);
     const layer = new carto.Layer('layer', source, viz);
 
     layer.addTo(map, 'watername_ocean');

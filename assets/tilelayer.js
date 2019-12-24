@@ -48,10 +48,10 @@
             var requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(mapParameters)
+                body: JSON.stringify(mapParameters),
             };
             var serverURL = this._serverURL || ('https://' + this._username + '.carto.com');
-            return fetch(serverURL + "/api/v1/map?api_key=" + this._apiKey, requestOptions)
+            return fetch(serverURL + "/api/v1/map?api_key=" + this._apiKey + "&client=vl-1.4.2", requestOptions)
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
                 var urlData = data.metadata.url.vector;
