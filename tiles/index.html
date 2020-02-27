@@ -33,19 +33,37 @@
     <script src="/tiles/tilelayer.js"></script>
 
     <script>
-      async function initialize() {
-        const populatedPlacesListings = new cartoTileLayer({
-          mapOptions: {
-            buffersize: {
-              mvt: 16
-            },
-            username: 'jbotella',
-            apiKey: 'default_public',
-            dataset: 'gadm36_usa_2'
-          }
-        });
+      async function instantiateMap() {
+        const instantiation = await fetch('https://jbotella.carto.com/api/v1/map?api_key=default_public', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            buffersize: { mvt: 16 },
+            layers: [{
+              type: 'cartodb',
+              options: {
+                sql: "select * from gadm36_usa_2",
+                vector_extent: 2048,
+                vector_simplify_extent: 2048,
+              }
+            }],
+            version: '1.3.1'
+          })
+        })
 
-        const tiledLayer = await populatedPlacesListings.createTileLayer({
+        const instantiationData = await instantiation.json();
+
+        const urlData = instantiationData.metadata.url.vector;
+        return urlData.subdomains.map(subdomain => {
+          return urlData.urlTemplate.replace('{s}', subdomain);
+        });
+      }
+
+      async function initialize() {
+        const mvtURLs = await instantiateMap();
+
+        const mvtLayer = new window.deck.MVTTileLayer({
+          urlTemplates: mvtURLs,
           pickable: true,
           autoHighlight: true,
           highlightColor: [255, 255, 255, 64],
@@ -63,13 +81,12 @@
           },
           controller: true,
           layers: [
-            tiledLayer
+            mvtLayer
           ]
         });
 
         // Debug
         deckInstance.getMapboxMap().showTileBoundaries = true
-
         window.deckInstance = deckInstance;
       }
 
