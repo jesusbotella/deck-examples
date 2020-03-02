@@ -36,7 +36,7 @@
                 throw new Error('Please provide a dataset or a SQL query');
             }
             var mapParameters = {
-                buffersize: { mvt: 1 },
+                buffersize: { mvt: 16 },
                 layers: [{
                         type: 'cartodb',
                         options: Object.assign({}, options, {
@@ -87,7 +87,7 @@
         return new deck.MVTTileLayer(
           Object.assign({}, styleProps, {
           getLineColor: [192, 0, 0],
-          getFillColor: [200, 120, 80],
+          // getFillColor: [200, 120, 80],
           lineWidthMinPixels: 1,
           pointRadiusMinPixels: 5,
           urlTemplates,
